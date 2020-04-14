@@ -1,7 +1,7 @@
 import requests
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
-                         RegexHandler, ConversationHandler)
-from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
+                          RegexHandler, ConversationHandler, CallbackQueryHandler)
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
 
 
 STATE1 = 1
@@ -38,12 +38,37 @@ def inputFeedback(update, context):
     else:
         message = "Muito obrigada pelo seu feedback!"
         context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+        return ConversationHandler.END
 
 
 def inputFeedback2(update, context):
     feedback = update.message.text
     message = "Muito obrigada pelo seu feedback!"
     context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+    return ConversationHandler.END
+
+
+def askForNota(update, context):
+    try:
+        question = 'Qual nota você dá para o tutorial?'
+        keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("1", callback_data='1'),
+                    InlineKeyboardButton("2", callback_data='2'),
+                    InlineKeyboardButton("3", callback_data='3'),
+                    InlineKeyboardButton("4", callback_data='4'),
+                    InlineKeyboardButton("5", callback_data='5')]])
+        update.message.reply_text(question, reply_markup=keyboard)
+    except Exception as e:
+        print(str(e))
+
+
+def getNota(update, context):
+    try:
+        query = update.callback_query
+        print(str(query.data))
+        message = 'Obrigada pela sua nota: ' + str(query.data) 
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+    except Exception as e:
+        print(str(e))
 
 
 def cancel(update, context):
@@ -67,7 +92,10 @@ def main():
             fallbacks=[CommandHandler('cancel', cancel)])
         updater.dispatcher.add_handler(conversation_handler)
 
-        print("Updater no ar1: " + str(updater))
+        updater.dispatcher.add_handler(CommandHandler('nota', askForNota))
+        updater.dispatcher.add_handler(CallbackQueryHandler(getNota))
+
+        print("Updater no ar: " + str(updater))
         updater.start_polling()
         updater.idle()
     except Exception as e:
@@ -76,3 +104,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

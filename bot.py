@@ -48,14 +48,16 @@ def inputFeedback2(update, context):
     return ConversationHandler.END
 
 
+# https://getemoji.com/
 def askForNota(update, context):
     try:
         question = 'Qual nota você dá para o tutorial?'
-        keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("1", callback_data='1'),
-                    InlineKeyboardButton("2", callback_data='2'),
-                    InlineKeyboardButton("3", callback_data='3'),
-                    InlineKeyboardButton("4", callback_data='4'),
-                    InlineKeyboardButton("5", callback_data='5')]])
+        keyboard = InlineKeyboardMarkup(
+            [[InlineKeyboardButton("👎 1", callback_data='1'),
+              InlineKeyboardButton("2", callback_data='2'),
+              InlineKeyboardButton("🤔 3", callback_data='3'),
+              InlineKeyboardButton("4", callback_data='4'),
+              InlineKeyboardButton("👍 5", callback_data='5')]])
         update.message.reply_text(question, reply_markup=keyboard)
     except Exception as e:
         print(str(e))
